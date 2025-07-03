@@ -1,5 +1,5 @@
 import pool from "../database/prenotabledb.js";
-import { getAllLocalsQuery, getLocalQuery, dynamicSearchQuery } from "../database/queries.js";
+import { getAllLocalsQuery, getLocalQuery, dynamicSearchQuery, getMostRatedLocalsQuery } from "../database/queries.js";
 import { orderByDay } from "../functions/utilitiesFunctions.js";
 
 
@@ -15,7 +15,7 @@ async function getAllLocals(req, res) {
 		const formattedResults = results.map(local => {
 			return { ...local, typologies: local.typologies.split(", ") }
 		})
-		res.send(formattedResults);
+		res.json(formattedResults);
 	} catch (error) {
 		console.error(error);
 		res.status(500).send({ status: 500, message: "Errore interno al server" });
@@ -85,7 +85,7 @@ async function getLocalsSearchedParams(req, res) {
 		const [minRange, maxRange] = ratingsRanges[rating]
 		queryParamsToAdd.push(minRange, maxRange);
 	}
-	
+
 	const completeQuery = `
 	${dynamicSearchQuery} ${queryToAdd ? queryToAdd : ""} ${categoriesQueryToAdd ? categoriesQueryToAdd : ""} GROUP BY locals.id ${ratingQueryToAdd}
 	`;
@@ -93,9 +93,9 @@ async function getLocalsSearchedParams(req, res) {
 	try {
 		const [results] = await pool.query(completeQuery, queryParamsToAdd);
 		if (results.length > 0) {
-			res.send(results)
+			res.json(results)
 		} else {
-			res.send({ message: "Nessun risultato", results: false })
+			res.json({ message: "Nessun risultato", results: false })
 		}
 	} catch (error) {
 		console.error(error);
@@ -103,6 +103,16 @@ async function getLocalsSearchedParams(req, res) {
 	}
 }
 
+// [GET] 10 most rated locals:
+async function getMostRatedLocals(req, res) {
+	try {
+		const [results] = await pool.query(getMostRatedLocalsQuery);
+		res.json(results)
+	} catch (error) {
+		console.error(error);
+		res.status(500).send({ status: 500, message: "Errore interno al server" });
+	}
+}
 
 // [DELETE] one local:
 // [MODIFY] one local:
@@ -112,5 +122,6 @@ async function getLocalsSearchedParams(req, res) {
 export {
 	getAllLocals,
 	getLocalById,
-	getLocalsSearchedParams
+	getLocalsSearchedParams,
+	getMostRatedLocals
 }
