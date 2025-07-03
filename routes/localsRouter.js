@@ -1,5 +1,6 @@
 import express from "express"; // express import.
 const localsRouter = express.Router(); // router inizialization.
+
 import { getAllLocals, getLocalById } from "../controllers/localsController.js"; // controller functions import.
 
 // ROUTES:
