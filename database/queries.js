@@ -6,13 +6,15 @@ const getAllLocalsQuery = `
   locals.city,
   locals.province,
   prices.price,
+	ROUND(AVG(reviews.rating), 2) AS average_rating,
   GROUP_CONCAT(DISTINCT typologies.name ORDER BY typologies.name ASC SEPARATOR ', ') AS typologies
 	FROM locals
 	JOIN locals_typologies ON locals.id = locals_typologies.local_id -- Join tabella ponte locali-tipologie
 	JOIN typologies ON locals_typologies.typology_id = typologies.id -- Join tabella tipologie
 	LEFT JOIN prices ON locals.price_id = prices.id -- Join del price
+	LEFT JOIN reviews ON locals.id = reviews.local_id
 	GROUP BY locals.id;
-`
+`;
 
 const getLocalQuery = `
 SELECT 
@@ -58,6 +60,7 @@ SELECT
     WHERE images.local_id = locals.id
   ) AS images,
   -- Recensioni
+	ROUND(AVG(reviews.rating), 2) AS average_rating,
   (
     SELECT JSON_ARRAYAGG(
       JSON_OBJECT(
@@ -91,10 +94,30 @@ SELECT
 FROM locals
 LEFT JOIN owners ON locals.owner_id = owners.id
 LEFT JOIN prices ON locals.price_id = prices.id
+LEFT JOIN reviews ON locals.id = reviews.local_id
 WHERE locals.id = ?;
+`;
+
+const dynamicSearchQuery = `
+SELECT
+  locals.id,
+  locals.title,
+  locals.contact_number,
+  locals.city,
+  locals.province,
+  prices.price,
+	ROUND(AVG(reviews.rating), 2) AS average_rating,
+  GROUP_CONCAT(DISTINCT typologies.name ORDER BY typologies.name ASC SEPARATOR ', ') AS typologies
+FROM locals
+JOIN locals_typologies ON locals.id = locals_typologies.local_id
+JOIN typologies ON locals_typologies.typology_id = typologies.id
+LEFT JOIN prices ON locals.price_id = prices.id
+LEFT JOIN reviews ON locals.id = reviews.local_id
+WHERE 1=1
 `
 
 export {
 	getAllLocalsQuery,
-	getLocalQuery
+	getLocalQuery,
+	dynamicSearchQuery
 }
