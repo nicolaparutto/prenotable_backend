@@ -47,21 +47,18 @@ async function getLocalsSearchedParams(req, res) {
 	const queryParamsToAdd = [];
 
 	if (where) {
-		console.log('cercato per città');
-		queryToAdd += 'AND locals.city LIKE ?';
-		queryParamsToAdd.push(`%${where}%`)
+		queryToAdd += ' AND locals.city LIKE ?';
+		queryParamsToAdd.push(`%${where}%`);
 	}
 	if (price) {
-		console.log('cercato per prezzo')
-		queryToAdd += 'AND prices.price = ?';
-		queryParamsToAdd.push(price)
+		queryToAdd += ' AND prices.price = ?';
+		queryParamsToAdd.push(price);
 	}
 	if (typologies) {
-		console.log('aggiunta una tipologia', typologies);
 		const typologyArray = typologies.split(",").map(t => t.trim());
 		const placeholders = typologyArray.map(() => "?").join(", ");
 		categoriesQueryToAdd = `
-		   AND EXISTS (
+		    AND EXISTS (
 		     SELECT 1
 		     FROM locals_typologies lt
 		     JOIN typologies t ON lt.typology_id = t.id
@@ -72,23 +69,37 @@ async function getLocalsSearchedParams(req, res) {
 		queryParamsToAdd.push(...typologyArray);
 	}
 	if (province) {
-		console.log('cercato per provincia')
-		queryToAdd += 'AND locals.province = ?';
-		queryParamsToAdd.push(province)
+		queryToAdd += ' AND locals.province = ?';
+		queryParamsToAdd.push(province);
 	}
 	if (rating) {
-		console.log('ricerca per voto');
-		ratingQueryToAdd += 'HAVING average_rating = ?';
-		queryParamsToAdd.push(rating)
+		console.log(rating);
+		const ratingsRanges = {
+			one_star: [0, 1.50],
+			two_star: [1.50, 2.50],
+			three_star: [2.50, 3.50],
+			four_star: [3.50, 4.50],
+			five_star: [4.50, 5]
+		}
+		ratingQueryToAdd += ' HAVING average_rating >= ? AND average_rating <= ?';
+		const [minRange, maxRange] = ratingsRanges[rating]
+		queryParamsToAdd.push(minRange, maxRange);
 	}
-	const completeQuery = `${dynamicSearchQuery} ${queryToAdd ? queryToAdd : ""} ${categoriesQueryToAdd ? categoriesQueryToAdd : ""} GROUP BY locals.id ${ratingQueryToAdd}`;
-
+	
+	const completeQuery = `
+	${dynamicSearchQuery} ${queryToAdd ? queryToAdd : ""} ${categoriesQueryToAdd ? categoriesQueryToAdd : ""} GROUP BY locals.id ${ratingQueryToAdd}
+	`;
 
 	try {
 		const [results] = await pool.query(completeQuery, queryParamsToAdd);
-		res.send(results);
+		if (results.length > 0) {
+			res.send(results)
+		} else {
+			res.send({ message: "Nessun risultato", results: false })
+		}
 	} catch (error) {
 		console.error(error);
+		res.status(500).send({ status: 500, message: "Errore interno al server" });
 	}
 }
 
