@@ -15,14 +15,15 @@ const pool = mysql2.createPool({
 
 async function testPoolConnection() {
 	try {
-		// Prendo una connessione dal pool
+		// take pool connection
 		const connection = await pool.getConnection();
 
-		// Faccio una semplice query per testare la connessione
+		// simple testing query
 		await connection.query('SELECT 1');
 		console.log('✅ Database Connected!');
-
-		connection.release(); // Importantissimo rilasciare la connessione
+		
+		// cancel connection
+		connection.release();
 	} catch (err) {
 		console.error('❌ Errore connessione pool DB:', err);
 		process.exit(1);
