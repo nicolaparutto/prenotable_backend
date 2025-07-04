@@ -20,6 +20,7 @@ const getLocalQuery = `
 SELECT 
   locals.id,
   owners.name AS ownerName,
+	owners.id AS ownerId,
   locals.title,
   JSON_OBJECT(
     'address', locals.address,
@@ -134,9 +135,30 @@ GROUP BY locals.id
 ORDER BY average_rating DESC
 LIMIT 10;
 `;
+
+const getOwnerLocalsQuery = `
+SELECT
+  locals.id,
+  locals.title,
+  locals.contact_number,
+  locals.city,
+  locals.province,
+  prices.price,
+  ROUND(AVG(reviews.rating), 2) AS average_rating,
+  GROUP_CONCAT(DISTINCT typologies.name ORDER BY typologies.name ASC SEPARATOR ', ') 
+FROM locals
+JOIN locals_typologies ON locals.id = locals_typologies.local_id -- Join tabella ponte locali-tipologie
+JOIN typologies ON locals_typologies.typology_id = typologies.id -- Join tabella tipologie
+LEFT JOIN prices ON locals.price_id = prices.id -- Join del price
+LEFT JOIN reviews ON locals.id = reviews.local_id
+LEFT JOIN owners ON locals.owner_id = owners.id
+WHERE owners.id = ?
+GROUP BY locals.id;
+`;
 export {
 	getAllLocalsQuery,
 	getLocalQuery,
 	dynamicSearchQuery,
-	getMostRatedLocalsQuery
+	getMostRatedLocalsQuery,
+	getOwnerLocalsQuery
 }

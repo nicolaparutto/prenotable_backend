@@ -1,7 +1,7 @@
 import express from "express"; // express import.
 const localsRouter = express.Router(); // router inizialization.
 
-import { getAllLocals, getLocalById, getLocalsSearchedParams, getMostRatedLocals } from "../controllers/localsController.js"; // controller functions import.
+import { getAllLocals, getLocalById, getLocalsSearchedParams, getMostRatedLocals, getOwnerLocals } from "../controllers/localsController.js"; // controller functions import.
 
 // ROUTES:
 //---------------------
@@ -12,6 +12,8 @@ localsRouter.get("/local/:id", getLocalById);
 // [GET] locals by city searched:
 localsRouter.get("/search", getLocalsSearchedParams);
 // [GET] 10 most rated locals:
-localsRouter.get("/most-rated", getMostRatedLocals)
+localsRouter.get("/most-rated", getMostRatedLocals);
+
+localsRouter.get("/owner-locals/:id", getOwnerLocals)
 
 export default localsRouter;

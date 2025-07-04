@@ -1,5 +1,5 @@
 import pool from "../database/prenotabledb.js";
-import { getAllLocalsQuery, getLocalQuery, dynamicSearchQuery, getMostRatedLocalsQuery } from "../database/queries.js";
+import { getAllLocalsQuery, getLocalQuery, dynamicSearchQuery, getMostRatedLocalsQuery, getOwnerLocalsQuery } from "../database/queries.js";
 import { orderByDay } from "../functions/utilitiesFunctions.js";
 
 
@@ -114,14 +114,23 @@ async function getMostRatedLocals(req, res) {
 	}
 }
 
-// [DELETE] one local:
-// [MODIFY] one local:
-// [STORE] one local:
+// [GET] searched locals:
+async function getOwnerLocals(req, res) {
+	const id = req.params.id;
 
+	try {
+		const [results] = await pool.query(getOwnerLocalsQuery, [id]);
+		res.json(results);
+	} catch (error) {
+		console.error(error);
+		res.status(500).send({ status: 500, message: "Errore interno al server" });
+	}
+}
 
 export {
 	getAllLocals,
 	getLocalById,
 	getLocalsSearchedParams,
-	getMostRatedLocals
+	getMostRatedLocals,
+	getOwnerLocals
 }
