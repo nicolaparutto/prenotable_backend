@@ -2,11 +2,12 @@ const getAllLocalsQuery = `
 	SELECT
   	locals.id,
   	locals.title,
-  	locals.contact_number,
   	locals.city,
-  	locals.province,
+    locals.address,
+    locals.initialDescription,
   	prices.price,
-		ROUND(AVG(reviews.rating), 2) AS average_rating,
+    prices.example,
+		ROUND(AVG(reviews.rating), 1) AS average_rating,
   	GROUP_CONCAT(DISTINCT typologies.name ORDER BY typologies.name ASC SEPARATOR ', ') AS typologies
 	FROM locals
 	JOIN locals_typologies ON locals.id = locals_typologies.local_id -- Join tabella ponte locali-tipologie
@@ -27,9 +28,11 @@ SELECT
     'province', locals.province,
     'city', locals.city
   ) AS locationData,
-  locals.description,
+  locals.initialDescription,
+  locals.completeDescription,
   locals.contact_number,
   prices.price,
+  prices.example,
   -- Tipologie
   (
     SELECT GROUP_CONCAT(DISTINCT typologies.name ORDER BY typologies.name ASC SEPARATOR ', ')
@@ -61,7 +64,7 @@ SELECT
     WHERE images.local_id = locals.id
   ) AS images,
   -- Recensioni
-	ROUND(AVG(reviews.rating), 2) AS average_rating,
+	ROUND(AVG(reviews.rating), 1) AS average_rating,
   (
     SELECT JSON_ARRAYAGG(
       JSON_OBJECT(
@@ -103,11 +106,12 @@ const dynamicSearchQuery = `
 SELECT
   locals.id,
   locals.title,
-  locals.contact_number,
   locals.city,
-  locals.province,
+  locals.address,
+  locals.initialDescription,
   prices.price,
-	ROUND(AVG(reviews.rating), 2) AS average_rating,
+  prices.example,
+	ROUND(AVG(reviews.rating), 1) AS average_rating,
   GROUP_CONCAT(DISTINCT typologies.name ORDER BY typologies.name ASC SEPARATOR ', ') AS typologies
 FROM locals
 JOIN locals_typologies ON locals.id = locals_typologies.local_id
@@ -120,11 +124,13 @@ const getMostRatedLocalsQuery = `
 SELECT
   locals.id,
   locals.title,
-  locals.contact_number,
   locals.city,
   locals.province,
+  locals.address,
+  locals.initialDescription,
   prices.price,
-  ROUND(AVG(reviews.rating), 2) AS average_rating,
+  prices.example,
+  ROUND(AVG(reviews.rating), 1) AS average_rating,
   GROUP_CONCAT(DISTINCT typologies.name ORDER BY typologies.name ASC SEPARATOR ', ') AS typologies
 FROM locals
 JOIN locals_typologies ON locals.id = locals_typologies.local_id
@@ -140,12 +146,14 @@ const getOwnerLocalsQuery = `
 SELECT
   locals.id,
   locals.title,
-  locals.contact_number,
   locals.city,
   locals.province,
+  locals.address,
+  locals.initialDescription,
   prices.price,
-  ROUND(AVG(reviews.rating), 2) AS average_rating,
-  GROUP_CONCAT(DISTINCT typologies.name ORDER BY typologies.name ASC SEPARATOR ', ') 
+  prices.example,
+  ROUND(AVG(reviews.rating), 1) AS average_rating,
+  GROUP_CONCAT(DISTINCT typologies.name ORDER BY typologies.name ASC SEPARATOR ', ') as typologies
 FROM locals
 JOIN locals_typologies ON locals.id = locals_typologies.local_id -- Join tabella ponte locali-tipologie
 JOIN typologies ON locals_typologies.typology_id = typologies.id -- Join tabella tipologie
@@ -156,9 +164,9 @@ WHERE owners.id = ?
 GROUP BY locals.id;
 `;
 export {
-	getAllLocalsQuery,
-	getLocalQuery,
-	dynamicSearchQuery,
-	getMostRatedLocalsQuery,
-	getOwnerLocalsQuery
+  getAllLocalsQuery,
+  getLocalQuery,
+  dynamicSearchQuery,
+  getMostRatedLocalsQuery,
+  getOwnerLocalsQuery
 }

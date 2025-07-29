@@ -114,7 +114,7 @@ async function getMostRatedLocals(req, res) {
 	}
 }
 
-// [GET] searched locals:
+// [GET] owners locals:
 async function getOwnerLocals(req, res) {
 	const id = req.params.id;
 
