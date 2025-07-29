@@ -13,7 +13,8 @@ localsRouter.get("/local/:id", getLocalById);
 localsRouter.get("/search", getLocalsSearchedParams);
 // [GET] 10 most rated locals:
 localsRouter.get("/most-rated", getMostRatedLocals);
-
+// [GET] oner locals:
 localsRouter.get("/owner-locals/:id", getOwnerLocals)
+// [GET utilities
 
 export default localsRouter;

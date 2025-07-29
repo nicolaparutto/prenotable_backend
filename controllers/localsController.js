@@ -1,11 +1,13 @@
+// db connection:
 import pool from "../database/prenotabledb.js";
-import { getAllLocalsQuery, getLocalQuery, dynamicSearchQuery, getMostRatedLocalsQuery, getOwnerLocalsQuery } from "../database/queries.js";
+// queries:
+import { getAllLocalsQuery, getLocalQuery, dynamicSearchQuery, getMostRatedLocalsQuery, getOwnerLocalsQuery } from "../database/queries/localsQueries.js";
+// utility functions:
 import { orderByDay } from "../functions/utilitiesFunctions.js";
 
 
 // ROUTES FUNCTIONS:
 //---------------------
-
 // [GET] all locals:
 async function getAllLocals(req, res) {
 	console.log('Chiamata a getLocals');
@@ -21,7 +23,6 @@ async function getAllLocals(req, res) {
 		res.status(500).send({ status: 500, message: "Errore interno al server" });
 	}
 };
-
 // [GET] one local:
 async function getLocalById(req, res) {
 	console.log('Chiamata a getLocalById con id:', req.params.id);
@@ -36,7 +37,6 @@ async function getLocalById(req, res) {
 		res.status(500).send({ status: 500, message: "Errore interno al server" });
 	}
 };
-
 // [GET] searched locals:
 async function getLocalsSearchedParams(req, res) {
 	const { where, price, typologies, province, rating } = req.query;
@@ -102,7 +102,6 @@ async function getLocalsSearchedParams(req, res) {
 		res.status(500).send({ status: 500, message: "Errore interno al server" });
 	}
 }
-
 // [GET] 10 most rated locals:
 async function getMostRatedLocals(req, res) {
 	try {
@@ -113,7 +112,6 @@ async function getMostRatedLocals(req, res) {
 		res.status(500).send({ status: 500, message: "Errore interno al server" });
 	}
 }
-
 // [GET] owners locals:
 async function getOwnerLocals(req, res) {
 	const id = req.params.id;

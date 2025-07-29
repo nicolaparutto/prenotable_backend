@@ -6,6 +6,8 @@ const app = express(); // express initialization.
 const port = process.env.PORT; // server port.
 
 import localsRouter from "./routes/localsRouter.js"; // localsRouter import.
+import utilitiesRouter from "./routes/utilitiesRouter.js"; // utilitiesRouter import.
+
 import cors from "cors"; // cors import.
 
 //=======================================================================================
@@ -21,7 +23,7 @@ app.get('/', (req, res) => {
 
 // ALL ROUTERS USES:
 app.use("/locals", localsRouter); // locals handle route.
-
+app.use("/utilities", utilitiesRouter) // utilities handle route.
 
 // server activation for comunications:
 app.listen(port, () => {
