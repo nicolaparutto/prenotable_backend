@@ -7,12 +7,22 @@ import { getRegionsQuery, getTypologiesQuery } from "../database/queries/utiliti
 // ROUTES FUNCTIONS:
 //---------------------
 // [GET] all regions:
-const getAllRegions = (req, res) => {
-	res.send("ricevi tutte le regioni")
+const getAllRegions = async (req, res) => {
+	try {
+		const [results] = await pool.query(getRegionsQuery)
+		res.json(results);
+	} catch (error) {
+		console.error(error);
+	}
 }
 // [GET] all locals typologies:
-const getAllLocalsTypologies = (req, res) => {
-	res.send("ricevi tutte le tipologie")
+const getAllLocalsTypologies = async (req, res) => {
+	try {
+		const [results] = await pool.query(getTypologiesQuery);
+		res.json(results);
+	} catch (error) {
+		console.error(error);
+	}
 }
 
 export {
