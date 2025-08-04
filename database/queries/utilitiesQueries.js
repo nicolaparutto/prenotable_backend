@@ -2,6 +2,7 @@ const getRegionsQuery = `
 SELECT 
   regions.id AS region_id,
   regions.name AS region_name,
+	regions.image_path AS image_path,
   COUNT(locals.region_id) AS total_locals
 FROM regions
 LEFT JOIN locals ON locals.region_id = regions.id
